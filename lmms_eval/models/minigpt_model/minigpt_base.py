@@ -5,11 +5,11 @@ import torch
 from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
-from minigpt4.common.registry import registry
-from minigpt4.models.base_model import BaseModel
+
+from .base_model import BaseModel
 from transformers import StoppingCriteria, StoppingCriteriaList
 
-from minigpt4.conversation.conversation import StoppingCriteriaSub
+
 
 class MiniGPTBase(BaseModel):
     """
@@ -67,9 +67,9 @@ class MiniGPTBase(BaseModel):
 
     def get_context_emb(self, prompt, img_list):
         device = img_list[0].device
+
         prompt_segs = prompt.split('<ImageHere>')
-        print(prompt_segs)
-        print(img_list)
+
         assert len(prompt_segs) == len(img_list) + 1, "Unmatched numbers of image placeholders and images."
         seg_tokens = [
             self.llama_tokenizer(
@@ -335,8 +335,6 @@ class MiniGPTBase(BaseModel):
             function for generate test use
         '''
 
-        stopping_criteria = StoppingCriteriaList([StoppingCriteriaSub(
-            stops=[torch.tensor([i]).to(self.device) for i in stop_words_ids])])
 
         img_embeds, atts_img = self.encode_img(images.to(self.device))
         image_lists = [[image_emb[None]] for image_emb in img_embeds]

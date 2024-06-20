@@ -1,16 +1,16 @@
-dataset_path: lmms-lab/COCO-Caption
+dataset_path: llizhx/sampled_coco2014_val_300_5
 dataset_kwargs:
   token: True
 task: "coco2014_cap_val"
 group : "coco_caption"
-test_split: val
+test_split: original
 output_type: generate_until
 doc_to_visual: !function utils.coco_doc_to_visual
-doc_to_text: "Provide a one-sentence caption for the provided image."
+doc_to_text: "Please describe the image in detail"
 doc_to_target: "answer"
 generation_kwargs:
-  max_new_tokens: 64
-  temperature: 0
+  max_new_tokens: 1024
+  temperature: 1.0
   top_p: 1.0
   num_beams: 1
   do_sample: false

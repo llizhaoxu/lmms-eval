@@ -49,9 +49,9 @@ pip install -e .
 If you wanted to test llava, you will have to clone their repo from [LLaVA](https://github.com/haotian-liu/LLaVA) and
 ```bash
 # for llava 1.5
-# git clone https://github.com/haotian-liu/LLaVA
-# cd LLaVA
-# pip install -e .
+ git clone https://github.com/haotian-liu/LLaVA
+ cd LLaVA
+ pip install -e .
 
 # for llava-next (1.6)
 git clone https://github.com/LLaVA-VL/LLaVA-NeXT
@@ -69,6 +69,9 @@ You can check the [environment install script](miscs/repr_scripts.sh) and [torch
 If you want to test on caption dataset such as `coco`, `refcoco`, and `nocaps`, you will need to have `java==1.8.0 ` to let pycocoeval api to work. If you don't have it, you can install by using conda
 ```
 conda install openjdk=8
+pip install sentencepiece
+pip install timm
+pip install omegaconf
 ```
 you can then check your java version by `java -version` 
 

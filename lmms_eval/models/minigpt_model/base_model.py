@@ -17,14 +17,17 @@ from transformers import LlamaTokenizer
 from peft import (
     LoraConfig,
     get_peft_model,
-    prepare_model_for_int8_training,
+    prepare_model_for_kbit_training,
 )
+from urllib.parse import urlparse
+from .dist_utils import download_cached_file
 
-from minigpt4.common.dist_utils import download_cached_file
-from minigpt4.common.utils import get_abs_path, is_url
-from minigpt4.models.eva_vit import create_eva_vit_g
-from minigpt4.models.modeling_llama import LlamaForCausalLM
+from .eva_vit import create_eva_vit_g
+from .modeling_llama import LlamaForCausalLM
 
+def is_url(url_or_filename):
+    parsed = urlparse(url_or_filename)
+    return parsed.scheme in ("http", "https")
 
 
 class BaseModel(nn.Module):
@@ -66,28 +69,6 @@ class BaseModel(nn.Module):
 
         return msg
 
-    @classmethod
-    def from_pretrained(cls, model_type):
-        """
-        Build a pretrained model from default configuration file, specified by model_type.
-
-        Args:
-            - model_type (str): model type, specifying architecture and checkpoints.
-
-        Returns:
-            - model (nn.Module): pretrained or finetuned model, depending on the configuration.
-        """
-        model_cfg = OmegaConf.load(cls.default_config_path(model_type)).model
-        model = cls.from_config(model_cfg)
-
-        return model
-
-    @classmethod
-    def default_config_path(cls, model_type):
-        assert (
-            model_type in cls.PRETRAINED_MODEL_CONFIG_DICT
-        ), "Unknown model type {}".format(model_type)
-        return get_abs_path(cls.PRETRAINED_MODEL_CONFIG_DICT[model_type])
 
     def load_checkpoint_from_config(self, cfg, **kwargs):
         """
@@ -170,6 +151,7 @@ class BaseModel(nn.Module):
 
     def init_llm(cls, llama_model_path, low_resource=False, low_res_device=0, lora_r=0,
                  lora_target_modules=["q_proj","v_proj"], **lora_kargs):
+        print("llama_model_path", llama_model_path)
         logging.info('Loading LLAMA')
         llama_tokenizer = LlamaTokenizer.from_pretrained(llama_model_path, use_fast=False)
         llama_tokenizer.pad_token = "$$"
@@ -188,7 +170,7 @@ class BaseModel(nn.Module):
             )
 
         if lora_r > 0:
-            llama_model = prepare_model_for_int8_training(llama_model)
+            llama_model = prepare_model_for_kbit_training(llama_model)
             loraconfig = LoraConfig(
                 r=lora_r,
                 bias="none",

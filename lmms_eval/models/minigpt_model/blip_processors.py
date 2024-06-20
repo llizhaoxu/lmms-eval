@@ -7,9 +7,8 @@
 
 import re
 
-from minigpt4.common.registry import registry
-from minigpt4.processors.base_processor import BaseProcessor
-from minigpt4.processors.randaugment import RandomAugment
+from .base_processor import BaseProcessor
+
 from omegaconf import OmegaConf
 from torchvision import transforms
 from torchvision.transforms.functional import InterpolationMode
@@ -25,7 +24,7 @@ class BlipImageBaseProcessor(BaseProcessor):
         self.normalize = transforms.Normalize(mean, std)
 
 
-@registry.register_processor("blip_caption")
+
 class BlipCaptionProcessor(BaseProcessor):
     def __init__(self, prompt="", max_words=50):
         self.prompt = prompt
@@ -68,7 +67,7 @@ class BlipCaptionProcessor(BaseProcessor):
         return caption
 
 
-@registry.register_processor("blip2_image_train")
+
 class Blip2ImageTrainProcessor(BlipImageBaseProcessor):
     def __init__(self, image_size=224, mean=None, std=None, min_scale=0.5, max_scale=1.0):
         super().__init__(mean=mean, std=std)
@@ -109,7 +108,7 @@ class Blip2ImageTrainProcessor(BlipImageBaseProcessor):
         )
 
 
-@registry.register_processor("blip2_image_eval")
+
 class Blip2ImageEvalProcessor(BlipImageBaseProcessor):
     def __init__(self, image_size=224, mean=None, std=None):
         super().__init__(mean=mean, std=std)

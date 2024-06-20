@@ -30,10 +30,12 @@ AVAILABLE_MODELS = {
     "phi3v": "Phi3v",
     "tinyllava": "TinyLlava",
     "llava_hf" : "LlavaHf",
+    "minigpt_4":"MiniGPT_4",
+    "minigptv2":"Minigpt_v2"
 }
 
 for model_name, model_class in AVAILABLE_MODELS.items():
     try:
         exec(f"from .{model_name} import {model_class}")
     except ImportError:
-        pass
+        print(f"Failed to import {model_class} from {model_name}")

@@ -5,10 +5,10 @@ import torch
 from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
-from minigpt4.common.registry import registry
-from minigpt4.models.base_model import disabled_train
-from minigpt4.models.minigpt_base import MiniGPTBase
-from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
+
+from .base_model import disabled_train
+from .minigpt_base import MiniGPTBase
+from .Qformer import BertConfig, BertLMHeadModel
 
 
 
@@ -148,8 +148,8 @@ class MiniGPT4(MiniGPTBase):
     def from_config(cls, cfg):
         vit_model = cfg.get("vit_model", "eva_clip_g")
         q_former_model = cfg.get("q_former_model", "https://storage.googleapis.com/sfr-vision-language-research/LAVIS/models/BLIP2/blip2_pretrained_flant5xxl.pth")
-        img_size = cfg.get("image_size")
-        num_query_token = cfg.get("num_query_token")
+        img_size = cfg.get("image_size",224)
+        num_query_token = cfg.get("num_query_token",32)
         llama_model = cfg.get("llama_model")
 
         drop_path_rate = cfg.get("drop_path_rate", 0)

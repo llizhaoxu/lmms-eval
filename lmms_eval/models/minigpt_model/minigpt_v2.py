@@ -5,10 +5,9 @@ import torch
 from torch.cuda.amp import autocast as autocast
 import torch.nn as nn
 
-from minigpt4.common.registry import registry
-from minigpt4.models.base_model import disabled_train
-from minigpt4.models.minigpt_base import MiniGPTBase
-from minigpt4.models.Qformer import BertConfig, BertLMHeadModel
+
+from .minigpt_base import MiniGPTBase
+
 
 
 
@@ -91,8 +90,8 @@ class MiniGPTv2(MiniGPTBase):
     @classmethod
     def from_config(cls, cfg):
         vit_model = cfg.get("vit_model", "eva_clip_g")
-        img_size = cfg.get("image_size",224)
-        llama_model = cfg.get("llama_model",)
+        img_size = cfg.get("image_size",448)
+        llama_model = cfg.get("llama_model","/home/li0007xu/DTC/llama-chat")
 
         drop_path_rate = cfg.get("drop_path_rate", 0)
         use_grad_checkpoint = cfg.get("use_grad_checkpoint", False)
@@ -102,7 +101,7 @@ class MiniGPTv2(MiniGPTBase):
 
         prompt_template = cfg.get("prompt_template", '')
         max_txt_len = cfg.get("max_txt_len", 300)
-        end_sym = cfg.get("end_sym", '\n')
+        end_sym = cfg.get("end_sym", '</s>')
 
         lora_r = cfg.get("lora_r", 64)
         lora_alpha = cfg.get("lora_alpha", 16)
@@ -130,7 +129,7 @@ class MiniGPTv2(MiniGPTBase):
             max_context_len=max_context_len,
         )
 
-        ckpt_path = cfg.get("ckpt", "")  # load weights of MiniGPT-4
+        ckpt_path = cfg.get("ckpt", "/home/li0007xu/DTC/Minigpt_ckpt/checkpoint_stage3.pth")  # load weights of MiniGPT-4
         if ckpt_path:
             print("Load Minigpt-4-LLM Checkpoint: {}".format(ckpt_path))
             ckpt = torch.load(ckpt_path, map_location="cpu")

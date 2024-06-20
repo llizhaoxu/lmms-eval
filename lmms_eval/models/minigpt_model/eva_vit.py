@@ -15,7 +15,7 @@ import torch.utils.checkpoint as checkpoint
 from timm.models.layers import drop_path, to_2tuple, trunc_normal_
 from timm.models.registry import register_model
 
-from minigpt4.common.dist_utils import download_cached_file
+from .dist_utils import download_cached_file
 
 def _cfg(url='', **kwargs):
     return {
@@ -430,6 +430,7 @@ def create_eva_vit_g(img_size=224,drop_path_rate=0.4,use_checkpoint=False,precis
     cached_file = download_cached_file(
         url, check_hash=False, progress=True
     )
+    print(f"Loading model from {cached_file}")
     state_dict = torch.load(cached_file, map_location="cpu")    
     interpolate_pos_embed(model,state_dict)
     
