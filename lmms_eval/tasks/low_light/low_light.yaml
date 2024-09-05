@@ -1,0 +1,3 @@
+group : low_light
+task:
+  - low_light_visible

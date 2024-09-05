@@ -42,6 +42,8 @@ AVAILABLE_MODELS = {
     "vila": "VILA",
     "xcomposer2_4KHD": "XComposer2_4KHD",
     "xcomposer2d5": "XComposer2D5",
+    "minigpt_4":"MiniGPT_4",
+    "minigptv2":"Minigpt_v2"
 }
 
 
