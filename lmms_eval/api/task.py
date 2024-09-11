@@ -1,5 +1,6 @@
 import abc
 import ast
+import copy
 import inspect
 import itertools
 import json
@@ -394,7 +395,9 @@ class Task(abc.ABC):
         pbar = tqdm(total=total_docs, desc=f"Building context", disable=(rank != 0))
         for doc_id in doc_id_iterator:
             # sample fewshot context #TODO: need to offset doc_id by rank now!
-            fewshot_ctx = self.fewshot_context(doc_id, 0 if self.config.num_fewshot is None else self.config.num_fewshot, self.config.training_split if self.has_training_docs() else split)
+            fewshot_ctx = self.fewshot_context(
+                doc_id, 0 if self.config.num_fewshot is None else self.config.num_fewshot, split
+            )  # TODO: avoid doc_id inconsistency between test and train, but wondering why selecting docs from test set, not train set
 
             # TODO: we should override self.config.repeats if doing greedy gen so users don't waste time+compute
             per_task_metadata = {"task": self.config["task"], "doc_id": doc_id, "repeats": self.config.repeats}
@@ -1026,11 +1029,13 @@ class ConfigurableTask(Task):
             The fewshot context.
         """
         doc = self.dataset_no_image[split][doc_id]
+
         if num_fewshot == 0:
             # always prepend the (possibly empty) task description
             labeled_examples = self.config.description
         else:
             labeled_examples = self.config.description + self.sampler.get_context(doc, num_fewshot)
+
         example = self.doc_to_text(doc)
         if type(example) == str:
             return labeled_examples + example
@@ -1241,7 +1246,7 @@ class ConfigurableTask(Task):
             return request_list
 
         elif self.OUTPUT_TYPE == "generate_until":
-            arguments = (ctx, self.config.generation_kwargs, self.doc_to_visual, doc_id, self.config.task, split)
+            arguments = (ctx, copy.deepcopy(self.config.generation_kwargs), self.doc_to_visual, doc_id, self.config.task, split)
         return Instance(request_type=self.OUTPUT_TYPE, arguments=arguments, idx=0, **kwargs)
 
     # TODO: we add a full_docs interface here for some evaluations that needs to access the full datasets during process_results function. we may have better ways to handle this.

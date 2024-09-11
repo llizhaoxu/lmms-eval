@@ -609,6 +609,7 @@ def evaluate(
 
     if hasattr(lm, "accelerator"):
         lm.accelerator.wait_for_everyone()
+
     return results_dict
 
 
