@@ -6,7 +6,7 @@ group : "style"
 test_split: game
 output_type: generate_until
 doc_to_visual: !function utils.coco_doc_to_visual
-doc_to_text: "Please describe this image."
+doc_to_text: "Provide a one-sentence caption for the provided image."
 doc_to_target: "answer"
 generation_kwargs:
   max_new_tokens: 128

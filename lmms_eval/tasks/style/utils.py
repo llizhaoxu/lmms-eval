@@ -36,9 +36,9 @@ def coco_process_result(doc, result):
     # The question id in our dataset is the image file itself
 
     image_id = int(question_id.split("_")[-1].split(".")[0])
-    task_name = doc["task_name"]
 
-    data_dict = {"pred": pred, "image_id": image_id, "task_name": task_name, "caption_or": doc['caption_or'], "caption": doc['caption']}
+
+    data_dict = {"pred": pred, "image_id": image_id, "caption_or": doc['caption_or'], "caption": doc['caption']}
 
     return {f"coco_{metric}": data_dict for metric in COCO_METRICS}
 
@@ -46,7 +46,7 @@ def coco_process_result(doc, result):
 def coco_aggregation_result(results, metric, args):
     scorers = [(Bleu(4), "Bleu_1"), (Bleu(4), "Bleu_2"), (Bleu(4), "Bleu_3"), (Bleu(4), "Bleu_4"), (Meteor(), "METEOR"), (Rouge(), "ROUGE_L"), (Cider(), "CIDEr")]  # , (Spice(), "SPICE")]
     scorers_dict = {s[1]: s for s in scorers}
-    task_name = results[0]["task_name"]
+
     stored_results = []
     # In order to make the coco eval tools to successfully create index
     # We need at least two dict in the dataset
@@ -66,7 +66,7 @@ def coco_aggregation_result(results, metric, args):
                 idx += 1
             dataset["images"].append({"id": result["image_id"]})
     except:
-        print(task_name)
+        raise ValueError("The results should be a list of dictionary with keys: image_id, pred, caption_or, caption")
 
     coco = COCO()
     # Manually create index here
@@ -96,11 +96,11 @@ def coco_aggregation_result(results, metric, args):
         n = int(metric.split("_")[-1])
         score = score[n - 1]
 
-    path = generate_submission_file("coco_captions_test2014_alg_results"+"_"+task_name+".json", args)
-    if not os.path.exists(path):
-        eval_logger.info("Storing prediction that can be submitted to the server ...")
-        with open(path, "w") as f:
-            json.dump(stored_results, f, indent=4)
+    # path = generate_submission_file("coco_captions_test2014_alg_results"+"_"+task_name+".json", args)
+    # if not os.path.exists(path):
+    #     eval_logger.info("Storing prediction that can be submitted to the server ...")
+    #     with open(path, "w") as f:
+    #         json.dump(stored_results, f, indent=4)
 
     return score
 
